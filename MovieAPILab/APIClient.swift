@@ -11,6 +11,7 @@ import UIKit
 class APIClient {
     
     class func search(terms: String, completion: @escaping ([[String:Any]]) -> Void) {
+        let terms = terms.replacingOccurrences(of: " ", with: "+")
         let urlString = "https://www.omdbapi.com/?s=\(terms)"
         if let url = URL(string: urlString) {
             let session = URLSession.shared
@@ -49,19 +50,11 @@ class APIClient {
         }
     }
     
-    class func getImages(url: URL, completion: @escaping (UIImage?) -> Void) {
-//        guard let url = URL(string: urlString) else { return }
+    class func getImages(url: URL, completion: @escaping (Any) -> Void) {
         let session = URLSession.shared
         let dataTask = session.dataTask(with: url) { (data, response, error) in
             if let data = data {
-                let poster = UIImage(data: data)
-                completion(poster)
-//                do {
-//                    if let poster = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? Any  {
-//                        print("HI")
-//                        completion(poster) // will eliminate later
-//                    }
-//                }
+                completion(data) // will eliminate later
             }
         }
         dataTask.resume()

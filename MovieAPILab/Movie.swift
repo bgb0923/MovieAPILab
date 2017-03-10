@@ -43,15 +43,15 @@ class Movie {
         self.metascore = dictionary["Metascore"] as? String ?? nil
     }
     
-    // This is a temporary test to make sure the image is working
-//    func unwrapPoster() {
-//        if let url = self.posterURL {
-//            APIClient.getImages(url: url, completion: { (data) in
-//                print(data)
-////                self.poster = UIImage(data: data)
-//            })
-//        }
-//    }
+    //     This is a temporary test to make sure the image is working
+    func unwrapPoster() {
+        if let url = self.posterURL {
+            APIClient.getImages(url: url, completion: { (data) in
+                print(data)
+                self.poster = UIImage(data: data as! Data)
+            })
+        }
+    }
 }
 
 extension Movie: CustomStringConvertible {

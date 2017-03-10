@@ -10,6 +10,12 @@ import UIKit
 
 class PosterCollectionViewCell: UICollectionViewCell {
     
+    var movie: Movie! {
+        didSet {
+            self.movie.unwrapPoster()
+            self.poster.image = self.movie.poster
+        }
+    }
     
     @IBOutlet weak var poster: UIImageView!
     

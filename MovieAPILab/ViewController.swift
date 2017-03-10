@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     var sectionInsets: UIEdgeInsets!
@@ -18,25 +20,21 @@ class ViewController: UIViewController {
     var referenceSize: CGSize!
     var numberOfColumns: CGFloat!
     
-    //    var movies: [Movie] = MovieDataStore.sharedInstance.movieArray
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureLayout()
+        self.searchBar.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         MovieDataStore.sharedInstance.fillArray(searchTerms: "star") { (_) in
             DispatchQueue.main.async {
                 print(MovieDataStore.sharedInstance.movieArray)
+                self.collectionView.reloadData()
             }
         }
-//        let url = URL(string: "https://images-na.ssl-images-amazon.com/images/M/MV5BZGEzZTExMDEtNjg4OC00NjQxLTk5NTUtNjRkNjA3MmYwZjg1XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg")
-//        APIClient.getImages(url: url!)
     }
-    
 }
 
 extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -51,17 +49,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PosterCell", for: indexPath) as! PosterCollectionViewCell
-        let movie = MovieDataStore.sharedInstance.movieArray[indexPath.item]
-        // will move later
-        APIClient.getImages(url: movie.posterURL!) { (poster) in
-            cell.poster.image = poster
-            print(poster)
-        }
-//        movie.unwrapPoster()
-//        if let poster = movie.poster {
-//            print("poster has been unwrapped")
-//            cell.poster.image = poster
-//        }
+        cell.movie = MovieDataStore.sharedInstance.movieArray[indexPath.item]
         return cell
     }
     
@@ -101,8 +89,19 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         let itemSizeHeight = (UIScreen.main.bounds.height / 2)
         itemSize = CGSize(width: itemSizeWidth,height: itemSizeHeight)
     }
+}
+
+extension ViewController: UISearchBarDelegate {
     
-    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchTerms = searchBar.text else { return }
+        MovieDataStore.sharedInstance.fillArray(searchTerms: searchTerms) { (_) in
+            print(MovieDataStore.sharedInstance.movieArray)
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
+    }
 }
 
 
